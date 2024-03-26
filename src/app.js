@@ -1,11 +1,23 @@
+const bodyParser = require('body-parser');
 const express = require('express');
-const config = require('../config/config');
 const app = express();
-const port = 3000;
 
-// test routes
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+const config = require('../config/config');
+const apiRoutes = require('./routes/apiRoutes');
+const authMiddleware = require('../middlewares/authMiddlewares');
+
+app.use(bodyParser.json());
+
+// middlewares 
+app.use(authMiddleware);
+
+// serve APIs for specific routes
+app.use('/api', apiRoutes);
+
+// error handling middleware (for unhandled errors)
+app.use((err, req, res, next) => {
+  console.error("ERROR: ", err);
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 // to start the server
