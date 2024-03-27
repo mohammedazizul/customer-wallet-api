@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
 const pool = require('../../config/database');
-const Customer = require('./customer');
 
 const createCustomer = async (customer) => {
 
@@ -8,24 +7,22 @@ const createCustomer = async (customer) => {
         return Promise.reject("Invalid param");
     }
 
-    if (!customer.firstName) {
+    if (!customer.first_name) {
         return res.status(400).json({ error: "Missing param customer first name." });
     }
 
-    if (!customer.lastName) {
+    if (!customer.last_name) {
         return res.status(400).json({ error: "Missing param  customer last name." });
     }
 
-    if (!customer.address) {
-        return res.status(400).json({ error: "Missing param  customer address." });
+    if (!customer.full_address) {
+        return res.status(400).json({ error: "Missing param  customer full address." });
     }
 
     return new Promise((resolve, reject) => {
 
         const customerData = {
-            first_name: customer.firstName,
-            last_name: customer.lastName,
-            full_address: customer.address,
+            ...customer,
             id: uuidv4(),
         };
 
