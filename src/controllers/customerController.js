@@ -3,22 +3,30 @@ const Wallet = require('../models/wallet');
 
 const createCustomer = async (req, res) => {
 
+    const allowedParams = ['first_name', 'last_name', 'full_address'];
+
     if (!req.body) {
         return res.status(400).json({ error: "Invalid customer data." });
     }
 
-    const { firstName, lastName, address } = req.body;
+    const missingParams = allowedParams.filter(param => !req.body.hasOwnProperty(param));
 
-    if (!firstName) {
+    if (missingParams.length > 0) {
+        return res.status(400).json({ error: `Missing required parameters: ${missingParams.join(', ')}` });
+    }
+
+    const { first_name, last_name, full_address } = req.body;
+
+    if (!first_name) {
         return res.status(400).json({ error: "Invalid customer first name." });
     }
 
-    if (!lastName) {
+    if (!last_name) {
         return res.status(400).json({ error: "Invalid customer last name." });
     }
 
-    if (!address) {
-        return res.status(400).json({ error: "Invalid customer address." });
+    if (!full_address) {
+        return res.status(400).json({ error: "Invalid customer full address." });
     }
 
     let isCustomerCreated = false;
@@ -27,7 +35,7 @@ const createCustomer = async (req, res) => {
 
     try {
         const customerData = {
-            firstName, lastName, address
+            first_name, last_name, full_address
         }
 
         const customer = await Customer.createCustomer(customerData);
