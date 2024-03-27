@@ -41,6 +41,78 @@ const createWallet = async (customerId) => {
     })
 }
 
+const softDeleteWallet = async (customerId) => {
+
+    if (!customerId) {
+        return Promise.reject("Missing param customer id.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+        let updateQuery = `UPDATE wallets SET deleted_at = CURRENT_TIMESTAMP  WHERE customer_id = ?`;
+
+        try {
+            pool.query(updateQuery, customerId, (error, result) => {
+                if (error) {
+                    console.log(error);
+                    reject("SQL_ERROR");
+                } else if (result) {
+                    if (result.affectedRows > 0) {
+                        resolve({
+                            message: "Wallet soft deleted successfully!",
+                            data: {
+                                customerId,
+                            }
+                        });
+                    } else {
+                        reject("SQL_ERROR");
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            reject("SQL_ERROR");
+        }
+    })
+}
+
+const revertSoftDeleteWallet = async (customerId) => {
+
+    if (!customerId) {
+        return Promise.reject("Missing param customer id.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+        let updateQuery = `UPDATE wallets SET deleted_at = null  WHERE customer_id = ?`;
+
+        try {
+            pool.query(updateQuery, customerId, (error, result) => {
+                if (error) {
+                    console.log(error);
+                    reject("SQL_ERROR");
+                } else if (result) {
+                    if (result.affectedRows > 0) {
+                        resolve({
+                            message: "Wallet updated successfully!",
+                            data: {
+                                customerId,
+                            }
+                        });
+                    } else {
+                        reject("SQL_ERROR");
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            reject("SQL_ERROR");
+        }
+    })
+}
+
 module.exports = {
-    createWallet
+    createWallet,
+    softDeleteWallet,
+    revertSoftDeleteWallet,
 };
