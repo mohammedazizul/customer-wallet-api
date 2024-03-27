@@ -17,43 +17,72 @@ The Customer Wallet API is a Node.js application that provides RESTful endpoints
 1. Clone the repository:
 
    ```bash
-    git clone https://github.com/mohammedazizul/customer-wallet-api.git
+      git clone https://github.com/mohammedazizul/customer-wallet-api.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-    cd customer-wallet-api
+      cd customer-wallet-api
    ```
 
 3. Install dependencies:
 
    ```bash
-    npm install
+      npm install
    ```
 
 4. Create a `.env` file in the root directory and add your environment variables:
 
    ```plaintext
-    PORT=5000
-    SERVER_NAME="customer-wallet-api"
-    TIME_ZONE="Asia/Kuala_Lumpur"
-    API_KEY="123456789"
+      PORT=5000
+      SERVER_NAME="customer-wallet-api"
+      TIME_ZONE="Asia/Kuala_Lumpur"
+      API_KEY="123456789"
+      DB_HOST="localhost"
+      DB_USER="root"
+      DB_PASSWORD="password"
+      DB_NAME="cw_db"
+      DB_PORT=3306
    ```
 
 5. Start the server:
 
    ```bash
-    npm start
+      npm start
    ```
 
 6. Access the API at `http://localhost:5000`.
 
 ## Usage
 
-- **API Endpoints**: Refer to the API documentation for details on available endpoints and their usage.
-- **Testing**: Use tools like Postman or curl to test the API endpoints and verify functionality.
-- **Customization**: Customize the API as needed by modifying route handlers, middleware, and configuration settings.
+### API Endpoints
+
+#### Create Customer
+- **Endpoint**: `POST /customer`
+- **Description**: Creates a new customer.
+- **Request Body**: JSON object containing customer details.
+
+#### Fetch Customers
+- **Endpoint**: `GET /customers`
+- **Description**: Fetches all customers details with their wallet balance.
+
+#### Delete Customer
+- **Endpoint**: `DELETE /customer/:customerId`
+- **Description**: Soft delete customer and wallet.
+- **Request Params**: Customer id.
+
+#### Patch Customer
+- **Endpoint**: `PATCH /customer/:customerId`
+- **Description**: Update customer details.
+- **Request Params**: Customer id.
+- **Request Body**: JSON object containing customer update details.
+
+#### Patch Wallet
+- **Endpoint**: `PATCH /wallet/:customerId`
+- **Description**: Update wallet balance.
+- **Request Params**: Customer id.
+- **Request Body**: JSON object containing wallet action (add/deduct) and amount details.
 
 ## Contributing
 
