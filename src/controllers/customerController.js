@@ -136,8 +136,56 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
+const updateCustomer = async (req, res) => {
+
+    const allowedParams = ['first_name', 'last_name', 'full_address'];
+
+    if (!req.params) {
+        return res.status(400).json({ error: "Invalid request data." });
+    }
+
+    const { customerId } = req.params;
+
+    if (!req.body) {
+        return res.status(400).json({ error: "Invalid customer data." });
+    }
+
+    const missingParams = allowedParams.filter(param => !req.body.hasOwnProperty(param));
+
+    if (missingParams.length > 0) {
+        return res.status(400).json({ error: `Missing required parameters: ${missingParams.join(', ')}` });
+    }
+
+    const newCustomerData = req.body;
+
+    if (!newCustomerData) {
+        return res.status(400).json({ error: "Invalid customer data." });
+    }
+
+    try {
+        const customer = await Customer.updateCustomer(customerId, newCustomerData);
+
+        if (customer.message === "Customer updated successfully!") {
+            return res.status(200).json({
+                message: "Customer updated successfully.",
+                data: {
+                    customerId: customer.data.customerId,
+                }
+            });
+        } else if (customer.message === "Customer not found!") {
+            return res.status(404).json({ error: "Customer not found!" });
+        } else {
+            return res.status(404).json({ error: "Something went wrong, please try again." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     createCustomer,
-    getAllCustomers,
     deleteCustomer,
+    updateCustomer,
+    getAllCustomers,
 };
