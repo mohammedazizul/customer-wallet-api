@@ -130,6 +130,8 @@ const deleteCustomer = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
+        await Customer.revertSoftDeleteCustomer(customerId);
+        await Wallet.revertSoftDeleteWallet(customerId)
         res.status(500).json({ error: "Internal server error" });
     }
 };
