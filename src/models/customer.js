@@ -57,8 +57,6 @@ const createCustomer = async (customer) => {
 
 const deleteCustomer = async (customerId) => {
 
-    console.log({ customerId })
-
     if (!customerId) {
         return Promise.reject("Missing param customer id.");
     }
@@ -139,8 +137,80 @@ const getAllCustomers = async () => {
     })
 }
 
+const softDeleteCustomer = async (customerId) => {
+
+    if (!customerId) {
+        return Promise.reject("Missing param customer id.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+        let updateQuery = `UPDATE customers SET deleted_at = CURRENT_TIMESTAMP  WHERE id = ?`;
+
+        try {
+            pool.query(updateQuery, customerId, (error, result) => {
+                if (error) {
+                    console.log(error);
+                    reject("SQL_ERROR");
+                } else if (result) {
+                    if (result.affectedRows > 0) {
+                        resolve({
+                            message: "Customer soft deleted Successfully!",
+                            data: {
+                                customerId,
+                            }
+                        });
+                    } else {
+                        reject("SQL_ERROR");
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            reject("SQL_ERROR");
+        }
+    })
+}
+
+const revertSoftDeleteCustomer = async (customerId) => {
+
+    if (!customerId) {
+        return Promise.reject("Missing param customer id.");
+    }
+
+    return new Promise((resolve, reject) => {
+
+        let updateQuery = `UPDATE customers SET deleted_at = null  WHERE id = ?`;
+
+        try {
+            pool.query(updateQuery, customerId, (error, result) => {
+                if (error) {
+                    console.log(error);
+                    reject("SQL_ERROR");
+                } else if (result) {
+                    if (result.affectedRows > 0) {
+                        resolve({
+                            message: "Customer updated successfully!",
+                            data: {
+                                customerId,
+                            }
+                        });
+                    } else {
+                        reject("SQL_ERROR");
+                    }
+                }
+            });
+        } catch (error) {
+            console.log(error);
+            reject("SQL_ERROR");
+        }
+    })
+}
+
 module.exports = {
     createCustomer,
     deleteCustomer,
-    getAllCustomers
+    getAllCustomers,
+    softDeleteCustomer,
+    revertSoftDeleteCustomer,
 };

@@ -90,7 +90,52 @@ const getAllCustomers = async (req, res) => {
     }
 };
 
+const deleteCustomer = async (req, res) => {
+
+    if (!req.params) {
+        return res.status(400).json({ error: "Invalid request data." });
+    }
+
+    const { customerId } = req.params;
+
+    if (!customerId) {
+        return res.status(400).json({ error: "Invalid customer id." });
+    }
+
+    let isCustomerDeleted = false;
+    let isWalletDeleted = false;
+
+    try {
+        const customer = await Customer.softDeleteCustomer(customerId);
+
+        if (customer.message === "Customer soft deleted Successfully!") {
+            isCustomerDeleted = true;
+
+            const wallet = await Wallet.softDeleteWallet(customerId);
+
+            if (wallet.message === "Wallet soft deleted successfully!") {
+                isWalletDeleted = true;
+            }
+        }
+
+        if (isCustomerDeleted && isWalletDeleted) {
+            return res.status(200).json({
+                message: "Customer and wallet deleted successfully.",
+                data: {}
+            });
+        } else {
+            await Customer.revertSoftDeleteCustomer(customerId);
+            await Wallet.revertSoftDeleteWallet(customerId)
+            return res.status(404).json({ error: "Something went wrong, please try again." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     createCustomer,
     getAllCustomers,
+    deleteCustomer,
 };
